@@ -15,7 +15,8 @@ The prebuilt comes in the form of a self-extracting zip file. Once downloaded, r
 From the Git repository, download the zip file containing all the required files. It will contain a Jupyter file named, 'Main.IPYNB' as well as a folder named 'Base Files'. The Jupyter file is the python file which will be used to enter the details of the XML file with the aircraft data as well as running and using ESP.
 ## 3. Making changes to Base files to run ESP with Jupyter
 Navigate to the root folder of ESP, where a batch file named, 'ESPenv.bat' will be present. Right-click this file and click edit. This should show a bunch of command lines which look similar to the following image: 
- 
+![image](https://user-images.githubusercontent.com/128641177/227029000-faba88de-c647-41b2-a670-524cc8359f9f.png)
+
 Copy the entire contents of this file. Then, open the downloaded folder, ‘Base Files’ and edit the batch file named, ‘ESP.bat’. Replace the contents of this file with the copied lines, but MAKE SURE NOT TO DELETE the lines at the end which aren’t there in the image above. The last two command lines must be present for proper operation. Then, save the ‘ESP.bat’ batch file and close it. That is all that was necessary to run ESP from the Jupyter file. The command lines copied allow the python commands to be linked to ESP which is installed in the computer. 
 
 ## 4. Running the Jupyter file

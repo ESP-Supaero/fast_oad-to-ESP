@@ -5,7 +5,7 @@ This batchfile contains code files for ESP and Python. Files used to generate mo
 ## Steps to install and use ESP with Jupyter
 
 Here it is described how to setup ESP for use along with the Jupyter file and related data files.
-The first step is to download ESP from MIT's website: https://acdl.mit.edu/ESP/
+The first step is to download ESP from MIT's website: https://acdl.mit.edu/ESP/.
 This link includes the ESP download files for all the different platforms, Linux, Mac and Windows. Our Python code and ESP links were setup to work with Windows. But with a good understanding of the working, it can easily be adapted to run on other platforms. 
 The ESP versions used were ESP120 and ESP121. But versions have little to no noticeable differences. Other versions in the future might include differences in the base functions, so careful checks will need to be carried out before proceeding. 
 ## 1. Downloading and Installing ESP

@@ -1,5 +1,5 @@
 # CeRAS Aircraft - Baseline model
-# written by Jose Santos and Sameer Sheriff
+# Written by José Carola dos Santos and Sameer Sheriff
 
 # Fuselage variables
 DESPMTR fus:height 4.05988
@@ -106,14 +106,6 @@ DESPMTR   vtp:tip:c      2.04976   # chord length at tip of vertical tail
 DESPMTR   vtp:tip:t      0.1       # thickness/chord of tip
 DESPMTR   vtp:tip:m      0.00      # camber/chord of tip
 DESPMTR   vtp:tip:a      0.00      # angle of attack of tip (deg)
-#--- #intermediate
-#--- DESPMTR   vtp:int:X     34.00      # X-coordinte of root leading edge
-#--- DESPMTR   vtp:int:Y     0.0        # Y-coordinte of root leading edge
-#--- DESPMTR   vtp:int:Z     3.50       # Z-coordinte of root leading edge
-#--- DESPMTR   vtp:int:c     4.0        # chord of root
-#--- DESPMTR   vtp:int:t     0.12       # thickness/chord of root
-#--- DESPMTR   vtp:int:m     0.00       # camber/chord of root
-#--- DESPMTR   vtp:int:a     0.00       # angle of attack of root (deg)
 
 ## Building cylindrical part of fuselage
 MARK
@@ -301,54 +293,64 @@ MARK
    SCALE     vtp:root:c
    ROTATEZ  -vtp:root:a  0      0
    TRANSLATE vtp:root:X  vtp:root:Y  vtp:root:Z  
-   # vertical wing intermediate section
-#---    UDPRIM    naca   thickness  vtp:int:t   camber  vtp:int:m
-#---    SCALE     vtp:int:c
-#---    ROTATEZ  -vtp:int:a   0      0
-#---    TRANSLATE vtp:int:X   vtp:int:Y  -vtp:int:Z
 RULE
 ATTRIBUTE _color $yellow  
 ROTATEX 90 0 0
 TRANSLATE 0 1.4 0
 DUMP vtp.stp
 STORE vtp
-
-
+   
 
 # ENGINES
-#LEFT ENGINE
+# NOTE: For cylinders in .csm code - 5th parameter is the cylnder height and 7th parameter is the base radius
+   
+# LEFT ENGINE
+# Builds the outer cylinder of the left nacelle
 CYLINDER 0 0 0 0 5 0 1.7
 ROTATEZ 90 0 0
 TRANSLATE 17.7 -2.5 7
    
+# Builds an inner cylinder that is going to be subtracted to the first cylinder created in order to create a "cylinder shell" structure - nacelle
 CYLINDER 0 0 0 0 5 0 1.5
 ROTATEZ 90 0 0
 TRANSLATE 17.7 -2.5 7
 SUBTRACT
    
+# Builds the most inner cylinder that represents the engine
 CYLINDER 0 0 0 0 4.6 0 1
 ROTATEZ 90 0 0
 TRANSLATE 17.5 -2.5 7
 
 
-#RIGHT ENGINE
+# RIGHT ENGINE
+# Builds the outer cylinder of the right nacelle
 CYLINDER 0 0 0 0 5 0 1.7
 ROTATEZ 90 0 0
 TRANSLATE 17.7 -2.5 -7
    
+# Builds an inner cylinder that is going to be subtracted to the first cylinder created in order to create a "cylinder shell" structure - nacelle
 CYLINDER 0 0 0 0 5 0 1.5
 ROTATEZ 90 0 0
 TRANSLATE 17.7 -2.5 -7
 SUBTRACT
    
+# Builds the most inner cylinder that represents the engine
 CYLINDER 0 0 0 0 4.6 0 1
 ROTATEZ 90 0 0
 TRANSLATE 17.5 -2.5 -7
 
 
-#PYLONS
-#				 		x      y    zmin  zmax
+# PYLONS
+# The pylons are modeled by creating some sections based on four parameters - x and y position, zmin and zmax
+# In this case, there is created a list of 9 sections (this could be changed according to the user will)
+   
+# Here, the pylon model is a 9 row, 4 column, Design Parameter with the given values. The values are listed across rows, 
+# with semi-colons between the various entries. Since spaces are used to enhance readability, the entire list
+# of values is placed between quotation marks. Also, since the inputs are split across multiple lines, the backslash
+# character is used to denote that the next line should be concatenated with the current line before processing;
+# all characters starting at the backslash are ignored.
 dimension modelpylon 9 4 1
+#				 	   x      y    zmin  zmax
 despmtr modelpylon " 0.50; -0.30; -0.10; 0.20;\
 			   		 1.40; -0.60; -0.10; 0.50;\
 			   		 2.20; -0.60; -0.10; 0.70;\
@@ -359,30 +361,48 @@ despmtr modelpylon " 0.50; -0.30; -0.10; 0.20;\
    			   		 5.50; -0.60;  0.60; 0.90;\
    			   		 5.80; -0.60;  0.85; 0.88;"
 
+# The pylonList Design Parameter has 2 rows and 4 columns.
 dimension pylonList 2 4 1
 despmtr   pylonList "0.10; 0; 1; 0;\
 				     0.05; 0; 0; 1"
 
+# Build the pylon
 mark 
+# We want to begin the pylon at a point. This is accomplished by using a "point" statement:
 point 0 0 0
-   
+
+# Then we need to generate the remaining 9 cross-sections. This is done with a "pattern"
+# (similar to a "for" loop in other programming languages).
 patbeg i modelpylon.nrow
 	udprim ellipse ry abs(modelpylon[i,2]) rz (modelpylon[i,4]-modelpylon[i,3])/2
 	translate      modelpylon[i,1] 0 		  (modelpylon[i,4]+modelpylon[i,3])/2
 patend
+# Within the pattern we create an ellipse (using the "ellipse" user-defined primitive) with its Parameters
+# taken from the second, third, and fourth columns of the modelPylon Design Parameter. Each cross-section is then
+# translated into its final position using the "translate" statement. The "patend" statement closes the pattern.
    
+# Finally we will generate the pylon by blending the point and 9 sections (everything since the "mark") using:
 blend pylonList
 ROTATEX -90 0 0
 TRANSLATE 13.1 -0.85 7
 RESTORE .
+# Creates the second pylon by mirroring the first one created in relation to the xy plane
 MIRROR 0 0 1
 DUMP pylon.stp
 STORE pylon
    
    
 # FAIRING
-#						 x      y    zmin  zmax
+# The fairing is modeled by creating some sections based on four parameters - x and y position, zmin and zmax
+# In this case, there is created a list of 6 sections (this could be changed according to the user will)
+   
+# Here, the fairing model is a 6 row, 4 column, Design Parameter with the given values. The values are listed across rows, 
+# with semi-colons between the various entries. Since spaces are used to enhance readability, the entire list
+# of values is placed between quotation marks. Also, since the inputs are split across multiple lines, the backslash
+# character is used to denote that the next line should be concatenated with the current line before processing;
+# all characters starting at the backslash are ignored.
 dimension modelfairing 6 4 1
+#				 	     x     y     zmin   zmax
 despmtr modelfairing " 0.50; -0.20; -0.30;     0;\
 			  		   1.00; -0.35; -0.55;     0;\
 			  		   1.80; -0.50; -0.80;     0;\
@@ -390,22 +410,32 @@ despmtr modelfairing " 0.50; -0.20; -0.30;     0;\
    			   		   3.20; -0.35; -0.80; -0.20;\
    			   		   3.80; -0.10; -0.65; -0.40;"
 
+# The fairingList Design Parameter has 2 rows and 4 columns.
 dimension fairingList 2 4 1
 despmtr   fairingList "0.10; 0; 1; 0;\
 				  	   0.05; 0; 0; 1"
 
+# Build the fairing
 mark 
+# We want to begin the fairing at a point. This is accomplished by using a "point" statement:
 point 0 0 0
    
+# Then we need to generate the remaining 6 cross-sections. This is done with a "pattern"
+# (similar to a "for" loop in other programming languages).
 patbeg i modelfairing.nrow
 	udprim ellipse ry abs(modelfairing[i,2]) rz (modelfairing[i,4]-modelfairing[i,3])/2
 	translate      modelfairing[i,1] 0 			(modelfairing[i,4]+modelfairing[i,3])/2
 patend
+# Within the pattern we create an ellipse (using the "ellipse" user-defined primitive) with its Parameters
+# taken from the second, third, and fourth columns of the modelfairing Design Parameter. Each cross-section is then
+# translated into its final position using the "translate" statement. The "patend" statement closes the pattern.
    
+# Finally we will generate the fairing by blending the point and 6 sections (everything since the "mark") using:
 blend fairingList
 ROTATEX -90 0 0
 TRANSLATE 18.2 -0.05 12
 RESTORE .
+# Creates the second fairing by mirroring the first one created in relation to the xy plane
 MIRROR 0 0 1
 DUMP fairing.stp
 STORE fairing

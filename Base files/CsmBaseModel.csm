@@ -1,5 +1,5 @@
 # CeRAS Aircraft - Baseline model
-# written by Jose Santos and Sameer Sheriff
+# Written by José Carola dos Santos and Sameer Sheriff
 
 # Fuselage variables
 DESPMTR fus:height 4.05988
@@ -106,14 +106,6 @@ DESPMTR   vtp:tip:c      2.04976   # chord length at tip of vertical tail
 DESPMTR   vtp:tip:t      0.1       # thickness/chord of tip
 DESPMTR   vtp:tip:m      0.00      # camber/chord of tip
 DESPMTR   vtp:tip:a      0.00      # angle of attack of tip (deg)
-#--- #intermediate
-#--- DESPMTR   vtp:int:X     34.00      # X-coordinte of root leading edge
-#--- DESPMTR   vtp:int:Y     0.0        # Y-coordinte of root leading edge
-#--- DESPMTR   vtp:int:Z     3.50       # Z-coordinte of root leading edge
-#--- DESPMTR   vtp:int:c     4.0        # chord of root
-#--- DESPMTR   vtp:int:t     0.12       # thickness/chord of root
-#--- DESPMTR   vtp:int:m     0.00       # camber/chord of root
-#--- DESPMTR   vtp:int:a     0.00       # angle of attack of root (deg)
 
 ## Building cylindrical part of fuselage
 MARK
@@ -301,11 +293,7 @@ MARK
    SCALE     vtp:root:c
    ROTATEZ  -vtp:root:a  0      0
    TRANSLATE vtp:root:X  vtp:root:Y  vtp:root:Z  
-   # vertical wing intermediate section
-#---    UDPRIM    naca   thickness  vtp:int:t   camber  vtp:int:m
-#---    SCALE     vtp:int:c
-#---    ROTATEZ  -vtp:int:a   0      0
-#---    TRANSLATE vtp:int:X   vtp:int:Y  -vtp:int:Z
+# ruled surface  
 RULE
 ATTRIBUTE _color $yellow  
 ROTATEX 90 0 0
